@@ -45,11 +45,11 @@ jobs:
       # Run this test before building, if it fails, the build will be stopped
       - name: Run test
         run: npm run test
-      
+
       - name: Build
         run: npm run build
       # end added by Hoang
-      
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
@@ -60,7 +60,7 @@ jobs:
           # added by Hoang
           path: "./dist"
           # end added by Hoang
-          
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
