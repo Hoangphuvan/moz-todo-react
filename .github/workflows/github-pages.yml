@@ -43,8 +43,8 @@ jobs:
         run: npm ci
 
       # Run this test before building, if it fails, the build will be stopped
-      #- name: Run test
-      #  run: npm run test
+      - name: Run test
+        run: npm run test
       
       - name: Build
         run: npm run build
