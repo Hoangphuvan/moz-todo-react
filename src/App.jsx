@@ -1,8 +1,9 @@
 import Form from "./components/Form";
 import FilterButton from "./components/FilterButton";
 import Todo from "./components/Todo";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { nanoid } from "nanoid";
+import { usePrevious } from "./components/Common";
 
 // Note: We are defining these constants outside our App() function because if they were defined inside it,
 // they would be recalculated every time the <App /> component re-renders, and we don't want that.
@@ -13,27 +14,27 @@ const FILTER_MAP = {
   Completed: (task) => task.completed,
 };
 
-console.log(`FILTER_MAP ${FILTER_MAP}`);
+//console.log(`FILTER_MAP ${FILTER_MAP}`);
 
 const FILTER_NAMES = Object.keys(FILTER_MAP);
 
-console.log(`FILTER_NAMES ${FILTER_NAMES}`);
+//console.log(`FILTER_NAMES ${FILTER_NAMES}`);
 
 function App(props) {
   // keep these logs for remembering
-  console.log("Call App");
+  //console.log("Call App");
   const [tasks, setTasks] = useState(props.tasks);
-  console.log(tasks);
+  //console.log(tasks);
   const [filter, setFilter] = useState("All");
 
   function addTask(name) {
-    console.log("Call addTask");
+    //console.log("Call addTask");
     const newTask = { id: `todo-${nanoid()}`, name: name, completed: false };
     setTasks([...tasks, newTask]);
   }
 
   function toggleTaskCompleted(id) {
-    console.log("Call toggleTaskCompleted");
+    //console.log("Call toggleTaskCompleted");
     const newTasks = tasks.map((task) => {
       // if this task has the same ID as the edited task
       if (task.id == id) {
@@ -50,14 +51,14 @@ function App(props) {
   }
 
   function deleteTask(id) {
-    console.log("Call deleteTask");
+    //console.log("Call deleteTask");
     const remainingTasks = tasks.filter((task) => task.id !== id);
     setTasks(remainingTasks);
   }
 
   function editTask(id, newName) {
-    console.log("Call editTask");
-    console.log(newName);
+    //console.log("Call editTask");
+    //console.log(newName);
     // if this task has the same ID as the edited task
     const editedTaskList = tasks.map((item) => {
       if (item.id === id) {
@@ -93,16 +94,30 @@ function App(props) {
     />
   ));
 
-  console.log(`filter list ${filterList}`);
+  //console.log(`filter list ${filterList}`);
   const taskNoun = taskList.length != 1 ? "tasks" : "task";
   const headingText = `${taskList.length} ${taskNoun} remaining`;
+
+  const listHeadingRef = useRef(null);
+
+  const prevTaskLength = usePrevious(tasks.length);
+
+  useEffect(() => {
+    console.log("useEffect" + prevTaskLength + tasks.length);
+    if (tasks.length < prevTaskLength) {
+      console.log("in useEffect");
+      listHeadingRef.current.focus();
+    }
+  }, [tasks.length, prevTaskLength]);
 
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">{filterList}</div>
-      <h2 id="list-heading">{headingText}</h2>
+      <h2 id="list-heading" tabIndex="-1" ref={listHeadingRef}>
+        {headingText}
+      </h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
